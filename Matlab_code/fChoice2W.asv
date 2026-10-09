@@ -1,0 +1,23 @@
+function [W, varargout] = fChoice2W(r, n)
+% f_choice2 weighting: 1/(r_i^2 + eps) if |r_i| > 1e-6, else 0
+% INPUT:  r (residual vector), n (unused)
+% OUTPUT: W (diagonal weight matrix), s=NaN, inlier_mask=|r|>1e-6, sigma=NaN
+% eps_floor  = 1e-12;
+% inverse_eps = 1e-8;
+abs_r = abs(r);
+pos   = abs_r > 1e-6;
+W_vec = zeros(size(r));
+% W_vec(pos) = 1 ./ (abs_r(pos).^2 + inverse_eps);
+% if sum(W_vec) <= eps_floor || ~all(isfinite(W_vec))
+%     W_vec = ones(size(r));
+% end
+
+
+log_weights = zeros(size(r));
+log_weights(pos) = -log(abs_r);
+W_vec(pos) = exp(log_weights);
+W = diag(W_vec / max(W_vec));
+varargout{1} = NaN;
+varargout{2} = pos;
+varargout{3} = NaN;
+end
